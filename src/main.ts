@@ -1,20 +1,21 @@
 import Phaser from 'phaser';
 
 import PreloadScene from './scenes/PreloadScene.ts';
-import Level01 from './scenes/Level01.ts';
+import LevelScene from './scenes/LevelScene.ts';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'app',
-  width: 800,
-  height: 600,
+  width: 768,
+  height: 576,
+  backgroundColor: '#4488AA',
   physics: {
     default: 'arcade',
     arcade: {
       gravity: { y: 200 }
     }
   },
-  scene: [PreloadScene, Level01]
+  scene: [PreloadScene, LevelScene]
 };
 
 export default new Phaser.Game(config);

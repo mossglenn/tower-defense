@@ -14,7 +14,7 @@ export default class Enemy extends Phaser.GameObjects.Image {
     this.scene = scene;
     this.x = x;
     this.y = y;
-    this.path = scene.getPath();
+    this.path = scene.path!;
   }
 
   startOnPath() {
