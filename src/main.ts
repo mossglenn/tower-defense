@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 
-import HelloWorldScene from './HelloWorldScene.ts';
+import PreloadScene from './scenes/PreloadScene.ts';
+import Level01 from './scenes/Level01.ts';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -13,7 +14,7 @@ const config: Phaser.Types.Core.GameConfig = {
       gravity: { y: 200 }
     }
   },
-  scene: [HelloWorldScene]
+  scene: [PreloadScene, Level01]
 };
 
 export default new Phaser.Game(config);
