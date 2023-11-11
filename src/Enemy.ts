@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import LevelScene from './scenes/LevelScene.ts';
 
-export default class Enemy extends Phaser.GameObjects.Image {
+export default class Enemy extends Phaser.Physics.Arcade.Image {
   scene: LevelScene;
   x: number;
   y: number;

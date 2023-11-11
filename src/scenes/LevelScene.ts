@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
 import Enemy from '../Enemy.ts';
 import Tower from '../Tower.ts';
+import Bullet from '../Bullet.ts';
 
 export default class LevelScene extends Phaser.Scene {
-  enemies?: Phaser.GameObjects.Group;
-  towers?: Phaser.GameObjects.Group;
+  enemies?: Phaser.Physics.Arcade.Group;
+  towers?: Phaser.Physics.Arcade.Group;
+  bullets?: Phaser.Physics.Arcade.Group;
   path?: Phaser.Curves.Path;
   //use map like [row][col]
   towerMap = [
@@ -29,15 +31,21 @@ export default class LevelScene extends Phaser.Scene {
     this.drawGrid(graphics);
     this.drawPath(graphics);
 
-    this.enemies = this.add.group({
+    this.enemies = this.physics.add.group({
       classType: Enemy,
       defaultKey: 'enemy',
       runChildUpdate: true
     });
 
-    this.towers = this.add.group({
+    this.towers = this.physics.add.group({
       classType: Tower,
       defaultKey: 'tower',
+      runChildUpdate: true
+    });
+
+    this.bullets = this.physics.add.group({
+      classType: Bullet,
+      defaultKey: 'bullet',
       runChildUpdate: true
     });
 
@@ -105,5 +113,9 @@ export default class LevelScene extends Phaser.Scene {
 
   placementAvailable(i: number, j: number): boolean {
     return this.towerMap[i][j] === 0;
+  }
+  fireBullet(bullet: Bullet, enemy: Enemy, speed = 600) {
+    console.log('fire bullet from scene');
+    this.physics.moveToObject(bullet, enemy, speed);
   }
 }
