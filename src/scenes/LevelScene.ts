@@ -2,9 +2,10 @@ import Phaser from 'phaser';
 import Enemy from '../Enemy.ts';
 import Tower from '../Tower.ts';
 import Bullet from '../Bullet.ts';
+import Enemies from '../Enemies.ts';
 
 export default class LevelScene extends Phaser.Scene {
-  enemies?: Phaser.Physics.Arcade.Group;
+  enemies?: Enemies;
   towers?: Phaser.Physics.Arcade.Group;
   bullets?: Phaser.Physics.Arcade.Group;
   path?: Phaser.Curves.Path;
@@ -31,11 +32,13 @@ export default class LevelScene extends Phaser.Scene {
     this.drawGrid(graphics);
     this.drawPath(graphics);
 
-    this.enemies = this.physics.add.group({
-      classType: Enemy,
-      defaultKey: 'enemy',
-      runChildUpdate: true
-    });
+    // this.enemies = this.physics.add.group({
+    //   classType: Enemy,
+    //   defaultKey: 'enemy',
+    //   runChildUpdate: true
+    // });
+    this.enemies = this.add.existing(new Enemies(this));
+    this.enemies.runChildUpdate = true;
 
     this.towers = this.physics.add.group({
       classType: Tower,
@@ -50,20 +53,22 @@ export default class LevelScene extends Phaser.Scene {
     });
 
     this.input.on('pointerdown', this.placeTower, this);
-    console.log(this.enemies);
-
-    console.log(this.towers);
+    this.physics.add.overlap(
+      this.bullets,
+      this.enemies,
+      (hitBullet, hitEnemy) => {
+        const bullet = hitBullet as Bullet;
+        bullet.destroy();
+        const enemy = hitEnemy as Enemy;
+        enemy.damage(bullet.damagePoints);
+      }
+    );
   }
 
   update(time: number, _delta: number): void {
     if (time > this.nextEnemy) {
-      const enemy = this.enemies!.get();
-      if (enemy) {
-        enemy.setActive(true);
-        enemy.setVisible(true);
-        enemy.startOnPath();
-        this.nextEnemy = time + 2000;
-      }
+      const enemy = this.enemies?.spawn();
+      this.nextEnemy = time + 2000;
     }
   }
 
@@ -113,9 +118,5 @@ export default class LevelScene extends Phaser.Scene {
 
   placementAvailable(i: number, j: number): boolean {
     return this.towerMap[i][j] === 0;
-  }
-  fireBullet(bullet: Bullet, enemy: Enemy, speed = 600) {
-    console.log('fire bullet from scene');
-    this.physics.moveToObject(bullet, enemy, speed);
   }
 }

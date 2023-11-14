@@ -3,12 +3,12 @@ import LevelScene from './scenes/LevelScene.ts';
 import Enemy from './Enemy.ts';
 import Bullet from './Bullet.ts';
 
-export default class Tower extends Phaser.Physics.Arcade.Image {
+export default class Tower extends Phaser.Physics.Arcade.Sprite {
   scene: LevelScene;
   x: number;
   y: number;
   nextTic = 0;
-  bulletSpeed = 1000;
+  ticsBetweenShots = 1000;
 
   constructor(scene: LevelScene, x: number, y: number, texture = 'tower') {
     super(scene, x, y, texture);
@@ -19,18 +19,22 @@ export default class Tower extends Phaser.Physics.Arcade.Image {
   update(time: number, _delta: number): void {
     if (time > this.nextTic) {
       this.fire();
-      this.nextTic = time + 600;
+      this.nextTic = time + this.ticsBetweenShots;
     }
   }
 
   selectEnemy(): Enemy | undefined {
     if (this.scene.enemies != undefined) {
-      const enemyUnits: Enemy[] =
-        this.scene.enemies!.children.getArray() as Enemy[];
-      const furthestEnemy = enemyUnits.reduce((prev, current) =>
-        prev && prev.follower.t > current.follower.t ? prev : current
+      const enemyUnits: Enemy[] = this.scene.enemies!.getMatching(
+        'visible',
+        true
       );
-      return furthestEnemy;
+      if (enemyUnits.length > 0) {
+        const furthestEnemy = enemyUnits.reduce((prev, current) =>
+          prev && prev.follower.t > current.follower.t ? prev : current
+        );
+        return furthestEnemy;
+      }
     }
     return undefined;
   }
@@ -40,15 +44,14 @@ export default class Tower extends Phaser.Physics.Arcade.Image {
     if (bullet) {
       bullet.setActive(true);
       bullet.setVisible(true);
-      console.log("here's the bullet");
-      console.log(bullet);
-      this.scene.fireBullet(bullet, enemy, this.bulletSpeed);
+
+      this.scene.physics.moveToObject(bullet, enemy, bullet.speed);
     }
   }
 
   fire() {
     const target = this.selectEnemy();
-    if (target) {
+    if (target != undefined) {
       this.shootAtEnemy(target);
     }
   }

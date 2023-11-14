@@ -6,6 +6,8 @@ export default class Bullet extends Phaser.Physics.Arcade.Sprite {
   x = 0;
   y = 0;
   key = 'bullet';
+  speed = 800;
+  damagePoints = 50;
 
   constructor(scene: LevelScene, x: number, y: number, key: string) {
     super(scene, x, y, key);
